@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"crypto/tls"
 	"fmt"
-	"github.com/fluffle/goirc/logging"
-	"github.com/fluffle/goirc/state"
+	"github.com/gamelost/goirc/logging"
+	"github.com/gamelost/goirc/state"
 	"io"
 	"net"
 	"strings"
@@ -23,8 +23,8 @@ type Conn struct {
 
 	// Handlers
 	intHandlers *hSet
-	fgHandlers *hSet
-	bgHandlers *hSet
+	fgHandlers  *hSet
+	bgHandlers  *hSet
 
 	// State tracker for nicks and channels
 	st         state.Tracker

@@ -24,44 +24,44 @@ var goircFix = fix{
 }
 
 const (
-	clientPath = "github.com/fluffle/goirc/client"
-	statePath  = "github.com/fluffle/goirc/state"
+	clientPath = "github.com/gamelost/goirc/client"
+	statePath  = "github.com/gamelost/goirc/state"
 )
 
 var goircConstants = map[string]string{
-	`"REGISTER"`: "REGISTER",
-	`"CONNECTED"`: "CONNECTED",
+	`"REGISTER"`:     "REGISTER",
+	`"CONNECTED"`:    "CONNECTED",
 	`"DISCONNECTED"`: "DISCONNECTED",
-	`"ACTION"`: "ACTION",
-	`"AWAY"`: "AWAY",
-	`"CTCP"`: "CTCP",
-	`"CTCPREPLY"`: "CTCPREPLY",
-	`"INVITE"`: "INVITE",
-	`"JOIN"`: "JOIN",
-	`"KICK"`: "KICK",
-	`"MODE"`: "MODE",
-	`"NICK"`: "NICK",
-	`"NOTICE"`: "NOTICE",
-	`"OPER"`: "OPER",
-	`"PART"`: "PART",
-	`"PASS"`: "PASS",
-	`"PING"`: "PING",
-	`"PONG"`: "PONG",
-	`"PRIVMSG"`: "PRIVMSG",
-	`"QUIT"`: "QUIT",
-	`"TOPIC"`: "TOPIC",
-	`"USER"`: "USER",
-	`"VERSION"`: "VERSION",
-	`"VHOST"`: "VHOST",
-	`"WHO"`: "WHO",
-	`"WHOIS"`: "WHOIS",
+	`"ACTION"`:       "ACTION",
+	`"AWAY"`:         "AWAY",
+	`"CTCP"`:         "CTCP",
+	`"CTCPREPLY"`:    "CTCPREPLY",
+	`"INVITE"`:       "INVITE",
+	`"JOIN"`:         "JOIN",
+	`"KICK"`:         "KICK",
+	`"MODE"`:         "MODE",
+	`"NICK"`:         "NICK",
+	`"NOTICE"`:       "NOTICE",
+	`"OPER"`:         "OPER",
+	`"PART"`:         "PART",
+	`"PASS"`:         "PASS",
+	`"PING"`:         "PING",
+	`"PONG"`:         "PONG",
+	`"PRIVMSG"`:      "PRIVMSG",
+	`"QUIT"`:         "QUIT",
+	`"TOPIC"`:        "TOPIC",
+	`"USER"`:         "USER",
+	`"VERSION"`:      "VERSION",
+	`"VHOST"`:        "VHOST",
+	`"WHO"`:          "WHO",
+	`"WHOIS"`:        "WHOIS",
 }
 
 var goircStructToConfig = map[string]string{
 	"Host":      "Server",
 	"Network":   "Server",
 	"NewNick":   "NewNick",
-	"SSL":	     "SSL",
+	"SSL":       "SSL",
 	"SSLConfig": "SSLConfig",
 	"PingFreq":  "PingFreq",
 	"Flood":     "Flood",
@@ -103,9 +103,9 @@ func stateApi(f *ast.File) bool {
 		stateImport = spec.Name.Name
 	}
 	return renameFixTab(f, []rename{
-		{"github.com/fluffle/goirc/state", "",
+		{"github.com/gamelost/goirc/state", "",
 			stateImport + ".StateTracker", stateImport + ".Tracker"},
-		{"github.com/fluffle/goirc/state", "",
+		{"github.com/gamelost/goirc/state", "",
 			stateImport + ".MockStateTracker", stateImport + ".MockTracker"},
 	})
 }
@@ -121,9 +121,11 @@ func clientApi(f *ast.File) bool {
 	}
 	fixed := false
 
-	maybeReplaceBasicLit := func (expr *ast.Expr) {
+	maybeReplaceBasicLit := func(expr *ast.Expr) {
 		str, ok := (*expr).(*ast.BasicLit)
-		if !ok || str == nil || str.Kind != token.STRING { return }
+		if !ok || str == nil || str.Kind != token.STRING {
+			return
+		}
 		if repl, ok := goircConstants[strings.ToUpper(str.Value)]; ok {
 			*expr = &ast.SelectorExpr{
 				ast.NewIdent(clientImport),
@@ -133,12 +135,14 @@ func clientApi(f *ast.File) bool {
 		}
 	}
 
-	maybeReplaceConnSelectors := func (expr *ast.Expr) {
+	maybeReplaceConnSelectors := func(expr *ast.Expr) {
 		sel, ok := (*expr).(*ast.SelectorExpr)
-		if !ok || !isClientConn(sel.X, clientImport) { return }
+		if !ok || !isClientConn(sel.X, clientImport) {
+			return
+		}
 		name := sel.Sel.String()
 		if rep, ok := goircStructToConfig[name]; ok {
-			sel.X   = addCall(sel.X, "Config")
+			sel.X = addCall(sel.X, "Config")
 			sel.Sel = ast.NewIdent(rep)
 			fixed = true
 		} else if meth, ok := goircStructToMethod[name]; ok {
@@ -180,7 +184,9 @@ func isClientConn(t ast.Expr, pkg string) bool {
 	// This is a massive pain-in-the-arse; I can see why type checking of this
 	// sort is often not done, s/AddHandler/HandleFunc/g is much simpler.
 	id, ok := t.(*ast.Ident)
-	if !ok || id.Obj == nil { return false }
+	if !ok || id.Obj == nil {
+		return false
+	}
 	switch dec := id.Obj.Decl.(type) {
 	case *ast.ValueSpec:
 		// Declared with var X Type

@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/fluffle/goirc/logging"
+	"github.com/gamelost/goirc/logging"
 	"runtime"
 	"strings"
 	"sync"

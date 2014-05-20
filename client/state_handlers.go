@@ -4,7 +4,7 @@ package client
 // to manage tracking state for an IRC connection
 
 import (
-	"github.com/fluffle/goirc/logging"
+	"github.com/gamelost/goirc/logging"
 	"strings"
 )
 

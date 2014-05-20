@@ -9,7 +9,7 @@ GOARCH may not be set in your environment; use your head.
 ### To install:
 
     cd $GOROOT/src/cmd/fix
-    ln -s $GOPATH/src/github.com/fluffle/goirc/fix/goirc.go
+    ln -s $GOPATH/src/github.com/gamelost/goirc/fix/goirc.go
     go build
     mv fix $GOROOT/pkg/tool/$GOOS_$GOARCH
 
